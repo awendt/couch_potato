@@ -5,6 +5,7 @@ class Test
 
   property :test, :default => 'Test value'
   property :complex, :default => [1, 2, 3]
+  property :hash, :default => {}
 end
 
 describe 'default properties' do
@@ -34,5 +35,13 @@ describe 'default properties' do
   
   it "should not return the default value when the actual value is empty" do
     t = Test.new(:complex => []).complex.should == []
+  end
+
+  it 'should allow me to use indifferent access' do
+    t = Test.new(:hash => {:some => 'thing'})
+    CouchPotato.database.save_document! t
+
+    t = CouchPotato.database.load_document t.id
+    t.hash[:some].should == 'thing'
   end
 end
